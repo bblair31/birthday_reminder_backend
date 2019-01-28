@@ -46,7 +46,7 @@ class Api::V1::MessagesController < ApplicationController
   end
 
 
-  private
+private
 
   def message_params
     params.require(:message).permit(:reminder_id, :content)
