@@ -3,7 +3,7 @@ puts "Seeding"
 users = (1..10).to_a
 relations = ['spouse', 'family', 'friend', 'coworker', 'pet']
 years = (2018..2019).to_a
-months = [12, 1, 2]
+months = [12, 1, 2, 3]
 days = (1..28).to_a
 true_false = [true, false]
 phone_numbers = ["999-999-9999", "123-456-7890"]
@@ -21,7 +21,7 @@ puts "Done seeding users."
 
 
 Reminder.delete_all
-200.times do
+500.times do
   Reminder.create(user_id: users.sample, relation: relations.sample, birthday: "#{years.sample}-#{months.sample}-#{days.sample}", person_name: Faker::Name.first_name, send_reminder: true_false.sample, phone: phone_numbers.sample, notes: notes_examples.sample)
 end
 puts "Done seeding reminders."
