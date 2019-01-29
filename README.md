@@ -23,36 +23,38 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Installing
 
-1. Install all required gems
+1. Fork and clone this repository
+
+2. Install all required gems
  
 ```
 bundle install
 ```
   * *NOTE*: If you get an error message about needing to install Bundler, from the command line run `gem install bundler`
   
-2. Created new PostgreSQL development database
+3. Created new PostgreSQL development database
 
 ```
 rails db:create
 ```
 
-3. Run all database migrations and establish schema
+4. Run all database migrations and establish schema
 
 ```
 rails db:migrate
 ```
-4. Seed the database with given seed data from seeds.rb
+5. Seed the database with given seed data from seeds.rb
 
 ```
 rails db:seed
 ```
 
-5. Start the Rails Server
+6. Start the Rails Server
 
 ```
 rails start
 ```
-6. Check to see if browser can communicate with the database
+7. Check to see if browser can communicate with the database
 
   * Open your default browser and navigate to localhost:3000 (or whatever address is listed in the command line at 'Listening on tcp:'
 
