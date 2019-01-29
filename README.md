@@ -3,6 +3,8 @@
 
 Efficient, lightweight Single Page Application(SPA) to automate birthday reminders for users’ contacts. Users can utilize an interactive calendar to keep track of all of their connections' birthdays along with notes, relationships and phone numbers. Users can also send SMS text messages with birthday messages and a gif attached via Twilio API.
 
+[Demo Video](https://www.dropbox.com/s/ivcytzvv68zb98j/BirthdayReminder%20Demo%20Video.mov?dl=0)
+
 User Stories:
  - A user signs in and is brought to their account.
  - A user can view each month.
