@@ -23,6 +23,8 @@ These instructions will get you a copy of the project up and running on your loc
 
 * You will need [PostgreSQL](https://www.postgresql.org/download/) running on your local environment.
 
+* You will need to register for a valid [Twilio](https://www.twilio.com/try-twilio) account and phone number to use the messaging feature.
+
 ### Installing
 
 1. Fork and clone this repository
@@ -50,13 +52,15 @@ rails db:migrate
 ```
 rails db:seed
 ```
+6. In `messages_controller.rb` uncomment lines 21-28 and replace "redacted" in `from:` and `to:` with valid twilio account number and `@message.reminder.phone`
 
-6. Start the Rails Server
+
+7. Start the Rails Server
 
 ```
 rails start
 ```
-7. Check to see if browser can communicate with the database
+8. Check to see if browser can communicate with the database
 
   * Open your default browser and navigate to localhost:3000 (or whatever address is listed in the command line at 'Listening on tcp:'
 
