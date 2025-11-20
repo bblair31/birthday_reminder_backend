@@ -1,87 +1,157 @@
+# Birthday Reminder API
 
-# BirthdayReminder 🎉 🎂
+A production-ready REST API for managing birthday reminders with SMS and email notifications.
 
-Efficient, lightweight Single Page Application(SPA) to automate birthday reminders for users’ contacts. Users can utilize an interactive calendar to keep track of all of their connections' birthdays along with notes, relationships and phone numbers. Users can also send SMS text messages with birthday messages and a gif attached via Twilio API.
+**Modernized from Ruby on Rails to Node.js/TypeScript** for better type safety, modern tooling, and enhanced features.
 
-[Demo Video](https://www.dropbox.com/s/ivcytzvv68zb98j/BirthdayReminder%20Demo%20Video.mov?dl=0)
-
-User Stories:
- - A user signs in and is brought to their account.
- - A user can view each month.
- - A user can add, edit, delete a birthday.
- - A user can receive notifications for birthdays via text. *In progress*
- - A user can send birthday text messages via Twilio
-
-
-## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
-
-### Prerequisites
-
-**Once you have this backend Rails API server up and running, you will need to fork and locally clone the React frontend from this repository:** [BirthdayReminder Frontend](https://github.com/bblair31/birthday_reminder_front_end)
-
-* You will need [PostgreSQL](https://www.postgresql.org/download/) running on your local environment.
-
-* You will need to register for a valid [Twilio](https://www.twilio.com/try-twilio) account and phone number to use the messaging feature.
-
-### Installing
-
-1. Fork and clone this repository
-
-2. Install all required gems
- 
-```
-bundle install
-```
-  * *NOTE*: If you get an error message about needing to install Bundler, from the command line run `gem install bundler`
-  
-3. Created new PostgreSQL development database
+## Repository Structure
 
 ```
-rails db:create
+birthday_reminder_backend/
+├── nodejs-backend/     # Modern Node.js/TypeScript implementation (ACTIVE)
+└── [Rails files]       # Original Ruby on Rails implementation (LEGACY)
 ```
 
-4. Run all database migrations and establish schema
+## Current Implementation (Node.js)
 
+The active backend is located in **`nodejs-backend/`** and built with modern technologies:
+
+- **Node.js 20 LTS** - JavaScript runtime
+- **TypeScript** - Full type safety
+- **Express** - Web framework
+- **Prisma** - Type-safe ORM with migrations
+- **PostgreSQL** - Database
+- **Twilio** - SMS notifications
+- **Nodemailer** - Email notifications
+- **JWT** - Authentication with refresh tokens
+
+### Quick Start
+
+```bash
+cd nodejs-backend
+npm install
+cp .env.example .env  # Configure your environment
+npm run docker:dev    # Start PostgreSQL & Redis
+npm run prisma:migrate
+npm run dev
 ```
-rails db:migrate
-```
-5. Seed the database with given seed data from seeds.rb
 
-```
-rails db:seed
-```
-6. In `messages_controller.rb` uncomment lines 21-28 and replace "redacted" in `from:` and `to:` with valid twilio account number and `@message.reminder.phone`
+**API Documentation**: http://localhost:3000/api-docs
 
+See [`nodejs-backend/README.md`](./nodejs-backend/README.md) for detailed documentation.
 
-7. Start the Rails Server
+## Key Features
 
-```
-rails start
-```
-8. Check to see if browser can communicate with the database
+### Core Functionality
+- User registration and JWT authentication
+- Birthday reminder CRUD operations
+- Custom message templates per reminder
+- SMS notifications via Twilio
+- Email notifications via SMTP
+- Automatic daily reminder scheduling (cron)
 
-  * Open your default browser and navigate to localhost:3000 (or whatever address is listed in the command line at 'Listening on tcp:'
+### Modern Engineering
+- TypeScript with strict mode
+- Input validation with Zod schemas
+- OpenAPI/Swagger documentation
+- Rate limiting per endpoint type
+- Security headers with Helmet.js
+- Structured logging with Winston
+- Health check endpoints
+- Graceful shutdown handling
+- Docker containerization
+- CI/CD pipeline with GitHub Actions
+- Comprehensive test suite with Jest
 
+## Environment Variables
 
-__Ctrl + c will stop the server when you are done testing
+**Important**: Never commit sensitive credentials to version control.
 
-## Built With
+Required for the Node.js backend:
+- `DATABASE_URL` - PostgreSQL connection string
+- `JWT_SECRET` - JWT signing key (minimum 32 characters)
+- `JWT_REFRESH_SECRET` - Refresh token secret
 
-* [Ruby on Rails](https://rubyonrails.org/) - Full stack framework
-* [PostgreSQL](https://www.postgresql.org/docs/) - Open source object-relational database system
-* [Twilio API](https://www.twilio.com/docs/sms) - External API for sending SMS messages on behalf of users
-* [Faker Gem](https://github.com/stympy/faker) - Factory for generating seed data
+For SMS notifications (Twilio):
+- `TWILIO_ACCOUNT_SID`
+- `TWILIO_AUTH_TOKEN`
+- `TWILIO_PHONE_NUMBER`
 
+See [`nodejs-backend/.env.example`](./nodejs-backend/.env.example) for all configuration options.
+
+## API Overview
+
+### Authentication
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/v1/auth/register` | Register new user |
+| POST | `/api/v1/auth/login` | Login |
+| POST | `/api/v1/auth/refresh` | Refresh tokens |
+| GET | `/api/v1/auth/me` | Get current user |
+
+### Reminders
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/reminders` | List reminders |
+| POST | `/api/v1/reminders` | Create reminder |
+| GET | `/api/v1/reminders/upcoming` | Upcoming birthdays |
+| PUT | `/api/v1/reminders/:id` | Update reminder |
+| DELETE | `/api/v1/reminders/:id` | Delete reminder |
+
+### Messages & Notifications
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/v1/messages` | Create message |
+| POST | `/api/v1/messages/:id/send` | Send SMS/Email |
+
+### Health
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/health` | Health check |
+| GET | `/api/v1/health/detailed` | Detailed status |
+
+Full API documentation available at `/api-docs` when running the server.
+
+## Frontend
+
+This backend is designed to work with a React frontend. The original frontend repository:
+[Birthday Reminder Frontend](https://github.com/bblair31/birthday_reminder_front_end)
+
+## Improvements Over Original Rails Version
+
+| Feature | Rails (Original) | Node.js (New) |
+|---------|------------------|---------------|
+| Type Safety | Ruby (dynamic) | TypeScript (static) |
+| Database ORM | ActiveRecord | Prisma (type-safe) |
+| Validation | Rails validations | Zod schemas |
+| Documentation | None | Swagger/OpenAPI |
+| Scheduled Reminders | Not implemented | Cron-based daily |
+| Email Notifications | Not implemented | Full SMTP support |
+| Notification Logs | Not implemented | Full history |
+| Rate Limiting | None | Per-endpoint limits |
+| Security Headers | Basic CORS | Helmet.js suite |
+| Refresh Tokens | Not implemented | Full rotation |
+| Health Checks | None | Readiness/Liveness |
+| Tests | None | Jest + Supertest |
+| CI/CD | None | GitHub Actions |
+
+## Legacy Rails Implementation
+
+The original Ruby on Rails files remain in the root directory for reference. This implementation is no longer actively maintained. All new development should use the `nodejs-backend/` implementation.
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## Contributors
 
-* [Shelby Scalia](https://github.com/srscalia)
-
+* Original Rails version by [Shelby Scalia](https://github.com/srscalia)
+* Node.js modernization - 2024
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-
+This project is licensed under the MIT License.
