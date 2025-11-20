@@ -1,0 +1,140 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model - stores user account information
+model User {
+  id                String    @id @default(uuid())
+  email             String    @unique
+  password          String
+  firstName         String    @map("first_name")
+  lastName          String    @map("last_name")
+  phone             String?
+  isEmailVerified   Boolean   @default(false) @map("is_email_verified")
+  isActive          Boolean   @default(true) @map("is_active")
+  timezone          String    @default("America/New_York")
+  preferredReminder ReminderMethod @default(EMAIL) @map("preferred_reminder")
+
+  // Password reset
+  passwordResetToken   String?   @map("password_reset_token")
+  passwordResetExpires DateTime? @map("password_reset_expires")
+
+  // Refresh tokens
+  refreshTokens     RefreshToken[]
+
+  // Relations
+  reminders         Reminder[]
+  notificationLogs  NotificationLog[]
+
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+// Refresh token for JWT refresh functionality
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+// Reminder model - stores birthday reminder information
+model Reminder {
+  id              String    @id @default(uuid())
+  userId          String    @map("user_id")
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  personName      String    @map("person_name")
+  relation        String    // e.g., "mother", "friend", "colleague"
+  birthday        DateTime  @db.Date
+  phone           String?   // Phone number for SMS notifications
+  email           String?   // Email for email notifications
+
+  // Reminder settings
+  sendReminder    Boolean   @default(true) @map("send_reminder")
+  daysBeforeReminder Int    @default(1) @map("days_before_reminder")
+  reminderMethod  ReminderMethod @default(EMAIL) @map("reminder_method")
+
+  notes           String?   @db.Text
+
+  // Custom message template
+  message         Message?
+
+  // Notification history
+  notificationLogs NotificationLog[]
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([birthday])
+  @@map("reminders")
+}
+
+// Message model - custom birthday message template
+model Message {
+  id          String   @id @default(uuid())
+  reminderId  String   @unique @map("reminder_id")
+  reminder    Reminder @relation(fields: [reminderId], references: [id], onDelete: Cascade)
+
+  content     String   @db.VarChar(500) // Increased from 120 to 500 chars
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("messages")
+}
+
+// Notification log - tracks sent notifications
+model NotificationLog {
+  id          String           @id @default(uuid())
+  userId      String           @map("user_id")
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reminderId  String           @map("reminder_id")
+  reminder    Reminder         @relation(fields: [reminderId], references: [id], onDelete: Cascade)
+
+  method      ReminderMethod
+  status      NotificationStatus
+
+  // Twilio/Email response data
+  externalId  String?          @map("external_id") // Twilio SID or Email Message ID
+  sentTo      String           @map("sent_to") // Phone number or email
+  content     String           @db.Text
+  errorMessage String?         @map("error_message") @db.Text
+
+  sentAt      DateTime         @default(now()) @map("sent_at")
+
+  @@index([userId])
+  @@index([reminderId])
+  @@index([sentAt])
+  @@map("notification_logs")
+}
+
+// Enums
+enum ReminderMethod {
+  SMS
+  EMAIL
+  BOTH
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+}
